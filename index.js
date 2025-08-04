@@ -3,27 +3,32 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
 import { createPool } from 'mysql2';
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-const pool = createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'Panchakarla@28', // <-- put your real password here
-    database: 'mydb',
-    connectionLimit: 10,
-    port: 3306,
-});
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+const pool = createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    connectionLimit: 10
+});
+
 app.use(session({
-  secret: 'your-secret-key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
