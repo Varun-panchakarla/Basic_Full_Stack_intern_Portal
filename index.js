@@ -21,8 +21,11 @@ const pool = new Pool({
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
-  ssl: process.env.PGSSL === 'true',
+  ssl: {
+    rejectUnauthorized: false,
+  }
 });
+
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
