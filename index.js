@@ -1,9 +1,12 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import session from 'express-session';
 import pg from 'pg';
 import dotenv from 'dotenv';
+
+import pgSession from 'connect-pg-simple';
+const PgSession = pgSession(session);
+
 
 dotenv.config();
 
@@ -34,14 +37,19 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(session({
+  store: new PgSession({
+    pool: pool,              // your existing pg Pool
+    tableName: 'session'     // optional, default is 'session'
+  }),
   secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 1000 * 60 * 60 * 6,
+    maxAge: 1000 * 60 * 60 * 6, // 6 hours
     sameSite: 'lax'
   }
 }));
+
 
 // Routes
 
